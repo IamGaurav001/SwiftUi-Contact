@@ -4,7 +4,7 @@ struct ContentView: View {
     @State private var searchText = ""
     @State private var isAddingContact = false
     @State private var contacts: [Contact] = []
-    @State private var isDetailViewPresented = false // Initialize here
+    @State private var isDetailViewPresented = false
     
     init() {
         let storedContacts = loadContacts()
@@ -133,7 +133,7 @@ struct EditContact: View {
             .navigationBarTitle("Edit Contact", displayMode: .inline)
             .toolbar {
                 Button {
-                    onSave() // Call the onSave closure to handle the save action
+                    onSave()
                 } label: {
                     Label("Save", systemImage: "square.and.arrow.up")
                 }
@@ -167,8 +167,6 @@ struct DetailView: View {
             }
             .sheet(isPresented: $isEditingContact) {
                 EditContact(contact: contact) {
-                    // Handle save action here
-                    // For example, update the contacts array or save the edited contact to UserDefaults
                 }
             }
         }
