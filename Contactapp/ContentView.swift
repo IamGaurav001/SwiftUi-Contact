@@ -1,42 +1,29 @@
 import SwiftUI
 
+struct Contact: Identifiable, Codable {
+    var id = UUID()
+    var name: String
+    var email: String
+    var phoneNumber: String
+}
+
 struct ContentView: View {
     @State private var searchText = ""
     @State private var isAddingContact = false
-    @State private var contacts: [Contact] = []
-    @State private var isDetailViewPresented = false
-    
-    init() {
-        let storedContacts = loadContacts()
-        self._contacts = State(initialValue: storedContacts)
-    }
-    
-    func loadContacts() -> [Contact] {
-        guard let data = UserDefaults.standard.data(forKey: "ContactList") else {
-            return []
-        }
-        do {
-            let decoded = try JSONDecoder().decode([Contact].self, from: data)
-            return decoded
-        } catch {
-            print("Error decoding contacts data: \(error)")
-            return []
-        }
-    }
-    
-    func saveContacts() {
-        do {
-            let encoded = try JSONEncoder().encode(contacts)
-            UserDefaults.standard.set(encoded, forKey: "ContactList")
-        } catch {
-            print("Error encoding contacts data: \(error)")
-        }
-    }
-    
+    @State private var contacts: [Contact] = [
+        Contact(name: "Roy Kent", email: "roykent@gmail.com", phoneNumber: "7656478998"),
+        Contact(name: "Richard Montlaur", email: "richardmontlaur@gmail.com", phoneNumber: "8678788698"),
+        Contact(name: "Dani Rojas", email: "danirojas@gmail.com", phoneNumber: "8756446878"),
+        Contact(name: "Jamie Tartt", email: "jamietartt@gmail.com", phoneNumber: "8675785767"),
+        Contact(name: "Roy Kent", email: "roykent@gmail.com", phoneNumber: "7656478998"),
+        Contact(name: "Richard Montlaur", email: "richardmontlaur@gmail.com", phoneNumber: "8678788698"),
+        Contact(name: "Dani Rojas", email: "danirojas@gmail.com", phoneNumber: "8756446878"),
+        Contact(name: "Jamie Tartt", email: "jamietartt@gmail.com", phoneNumber: "8675785767")
+        ]
+      
     var filteredContacts: [Contact] {
         searchText.isEmpty ? contacts : contacts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
     }
-    
     var body: some View {
         NavigationView {
             List {
@@ -45,7 +32,6 @@ struct ContentView: View {
                         Text(contact.name)
                     }
                 }
-                .onDelete(perform: deleteContact)
             }
             .searchable(text: $searchText, placement: .automatic, prompt: "Search Contacts")
             .navigationBarTitle("Contacts", displayMode: .inline)
@@ -60,21 +46,7 @@ struct ContentView: View {
                 NewContact(contacts: $contacts)
             }
         }
-        .onDisappear {
-            saveContacts()
-        }
     }
-    
-    func deleteContact(at offsets: IndexSet) {
-        contacts.remove(atOffsets: offsets)
-    }
-}
-
-struct Contact: Identifiable, Codable {
-    var id = UUID()
-    var name: String
-    var email: String
-    var phoneNumber: String
 }
 
 struct NewContact: View {
@@ -113,33 +85,29 @@ struct NewContact: View {
 }
 
 struct EditContact: View {
-    @State private var editedContact: Contact
-    var onSave: () -> Void // Closure to handle save action
-
-    init(contact: Contact, onSave: @escaping () -> Void) {
-        self._editedContact = State(initialValue: contact)
-        self.onSave = onSave
-    }
-
+    @Binding var contact: Contact
+    @Binding var contacts: [Contact]
+    
     var body: some View {
         NavigationView {
             Form {
                 Section(header: Text("Personal info")) {
-                    TextField("Name", text: $editedContact.name).padding(3)
-                    TextField("Email id", text: $editedContact.email).padding(3)
-                    TextField("Phone Number", text: $editedContact.phoneNumber).padding(3)
+                    TextField("Name", text: $contact.name).padding(3)
+                    TextField("Email id", text: $contact.email).padding(3)
+                    TextField("Phone Number", text: $contact.phoneNumber).padding(3)
                 }
             }
             .navigationBarTitle("Edit Contact", displayMode: .inline)
             .toolbar {
                 Button {
-                    onSave()
+                    if let index = contacts.firstIndex(where: { $0.id == contact.id }) {
+                        contacts[index] = contact
+                    }
                 } label: {
                     Label("Save", systemImage: "square.and.arrow.up")
                 }
             }
         }
-
     }
 }
 
@@ -147,6 +115,13 @@ struct DetailView: View {
     var contact: Contact
     @Binding var contacts: [Contact]
     @State private var isEditingContact = false
+    @State private var editedContact: Contact
+    
+    init(contact: Contact, contacts: Binding<[Contact]>) {
+        self.contact = contact
+        self._contacts = contacts
+        self._editedContact = State(initialValue: contact)
+    }
 
     var body: some View {
         NavigationView {
@@ -164,14 +139,14 @@ struct DetailView: View {
                 } label: {
                     Label("Edit", systemImage: "pencil")
                 }
-            }
-            .sheet(isPresented: $isEditingContact) {
-                EditContact(contact: contact) {
+                .sheet(isPresented: $isEditingContact) {
+                    EditContact(contact: $editedContact, contacts: $contacts)
                 }
+            }
             }
         }
     }
-}
+
 
 
 #Preview {
