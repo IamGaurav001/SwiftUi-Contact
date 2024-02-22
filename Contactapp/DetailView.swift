@@ -23,6 +23,7 @@ struct DetailView: View {
     var body: some View {
         NavigationView {
             Form {
+                //PhotoPicker
                 VStack {
                     Spacer()
                     
