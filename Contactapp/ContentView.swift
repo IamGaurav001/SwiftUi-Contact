@@ -12,11 +12,7 @@ struct Contact: Identifiable, Codable {
 struct ContentView: View {
     @State private var searchText = ""
     @State private var isAddingContact = false
-    @State private var contacts: [Contact] = [
-        Contact(name: "Roy Kent", email: "roykent@gmail.com", phoneNumber: "7656478998"),
-        Contact(name: "Richard Montlaur", email: "richardmontlaur@gmail.com", phoneNumber: "8678788698"),
-        Contact(name: "Dani Rojas", email: "danirojas@gmail.com", phoneNumber: "8756446878")
-        ]
+    @State private var contacts: [Contact] = []
       
     var filteredContacts: [Contact] {
         searchText.isEmpty ? contacts : contacts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }

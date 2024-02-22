@@ -23,6 +23,24 @@ struct DetailView: View {
     var body: some View {
         NavigationView {
             Form {
+                VStack {
+                    Spacer()
+                    
+                    HStack {
+                        Spacer()
+                        
+                        Image(systemName: "person.circle.fill")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                        
+                        Spacer()
+                    }
+                    
+                    Spacer()
+                }
+                
                 Section(header: Text("Personal info")) {
                     Text("Name: \(contact.name)")
                     Text("Email: \(contact.email)")
