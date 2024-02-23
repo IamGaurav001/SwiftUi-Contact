@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import PhotosUI
+
 
 // Editing the present contact
 struct EditContact: View {

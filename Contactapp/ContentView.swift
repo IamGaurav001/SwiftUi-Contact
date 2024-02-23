@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 //initailizing the variables
 struct Contact: Identifiable, Codable {

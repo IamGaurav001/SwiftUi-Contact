@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 // Detail view of the contact
 struct DetailView: View {
@@ -13,6 +14,8 @@ struct DetailView: View {
     @Binding var contacts: [Contact]
     @State private var isEditingContact = false
     @State private var editedContact: Contact
+    @State private var PhotosPickerItem : PhotosPickerItem?
+    @State private var avatarImage : UIImage?
     
     init(contact: Contact, contacts: Binding<[Contact]>) {
         self.contact = contact
@@ -22,24 +25,35 @@ struct DetailView: View {
 
     var body: some View {
         NavigationView {
-            Form {
+            List {
                 //PhotoPicker
                 VStack {
                     Spacer()
                     
-                    HStack {
+                    HStack(){
                         Spacer()
-                        
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
+                        PhotosPicker(selection: $PhotosPickerItem, matching: .images) {
+                            Image(uiImage: avatarImage ?? UIImage(systemName: "person.circle") ?? UIImage())
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 100, height: 100)
+                                .clipShape(Circle())
+                        }
                         
                         Spacer()
                     }
                     
                     Spacer()
+                }
+                .onChange(of: PhotosPickerItem) { _, _ in
+                    Task{
+                        if let PhotosPickerItem{
+                            let data = try? await PhotosPickerItem.loadTransferable(type: Data.self)
+                            if let image = UIImage(data:data!){
+                                avatarImage = image
+                            }
+                        }
+                    }
                 }
                 
                 Section(header: Text("Personal info")) {

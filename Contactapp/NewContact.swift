@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 // Adding new contacts
 struct NewContact: View {
