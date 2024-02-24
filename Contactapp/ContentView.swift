@@ -1,5 +1,7 @@
 import SwiftUI
 import PhotosUI
+import FirebaseCore
+
 
 //initailizing the variables
 struct Contact: Identifiable, Codable {
@@ -9,12 +11,14 @@ struct Contact: Identifiable, Codable {
     var phoneNumber: String
 }
 
+
+
 // Main View
 struct ContentView: View {
     @State private var searchText = ""
     @State private var isAddingContact = false
     @State private var contacts: [Contact] = []
-      
+    @State private var avatarImage: UIImage?
     var filteredContacts: [Contact] {
         searchText.isEmpty ? contacts : contacts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
     }
@@ -38,7 +42,7 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $isAddingContact) {
-                NewContact(contacts: $contacts)
+                NewContact(contacts: $contacts, avatarImage: $avatarImage)
             }
             .onAppear {
                 showContacts()
@@ -54,12 +58,13 @@ struct ContentView: View {
             contacts = decodedContacts
         }
     }
-
+    
     func deleteContact(at offsets: IndexSet) {
-            contacts.remove(atOffsets: offsets)
-            saveContacts()
-        }
+        contacts.remove(atOffsets: offsets)
+        saveContacts()
+    }
 }
+
 
 
 #Preview {

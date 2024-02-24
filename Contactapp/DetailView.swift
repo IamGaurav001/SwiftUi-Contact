@@ -26,37 +26,21 @@ struct DetailView: View {
     var body: some View {
         NavigationView {
             List {
-                //PhotoPicker
-                VStack {
-                    Spacer()
-                    
-                    HStack(){
-                        Spacer()
-                        PhotosPicker(selection: $PhotosPickerItem, matching: .images) {
-                            Image(uiImage: avatarImage ?? UIImage(systemName: "person.circle") ?? UIImage())
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: 100, height: 100)
-                                .clipShape(Circle())
-                        }
-                        
-                        Spacer()
-                    }
-                    
-                    Spacer()
-                }
-                .onChange(of: PhotosPickerItem) { _, _ in
-                    Task{
-                        if let PhotosPickerItem{
-                            let data = try? await PhotosPickerItem.loadTransferable(type: Data.self)
-                            if let image = UIImage(data:data!){
-                                avatarImage = image
-                            }
-                        }
-                    }
-                }
-                
                 Section(header: Text("Personal info")) {
+                    //PhotoPicker
+                    VStack {
+                        Spacer()
+                        HStack(){
+                            Spacer()
+                                Image(uiImage: avatarImage ?? UIImage(systemName: "person.circle") ?? UIImage())
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 100, height: 100)
+                                    .clipShape(Circle())
+                            Spacer()
+                            }
+                            Spacer()
+                        }
                     Text("Name: \(contact.name)")
                     Text("Email: \(contact.email)")
                     Text("Phone Number: \(contact.phoneNumber)")
@@ -70,7 +54,7 @@ struct DetailView: View {
                     Label("Edit", systemImage: "pencil")
                 }
                 .sheet(isPresented: $isEditingContact) {
-                    EditContact(contact: $editedContact, contacts: $contacts)
+                    EditContact(contact: $editedContact, contacts: $contacts, avatarImage: $avatarImage)
                 }
             }
         }
@@ -78,6 +62,7 @@ struct DetailView: View {
 }
 
 
+    
 #Preview {
     ContentView()
 }
